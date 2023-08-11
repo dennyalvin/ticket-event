@@ -1,0 +1,106 @@
+@extends('base_layout')
+
+@section('main')
+    <div class="container">
+        @if (session()->has('errors'))
+            <div class="card-header alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+        <form class="row" method="POST"
+              action="{{ Route('promoter.event.create') }}">
+            <div class="col">
+                <div class="row card shadow-sm mb-5">
+                    <div class="card-body">
+                        <h4 class="card-text">Create a new event</h4>
+                        <div class="justify-content-between align-items-center">
+                            {{ csrf_field() }}
+                            <div class="mb-3 row">
+                                <div class="col">
+                                    <label for="firstNameInput" class="form-label">Title</label>
+                                    <input class="form-control" id="firstNameInput" name="title"  />
+                                </div>
+
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Type</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Select</option>
+                                        @foreach($event_types as $t)
+                                            <option value="{{ $t->code }}">{{ $t->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Description</label>
+                                    <textarea class="form-control" id="firstNameInput" name="description"></textarea>
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Location Address</label>
+                                    <textarea class="form-control" id="firstNameInput" name="location_address"></textarea>
+                                </div>
+
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Redemption Description</label>
+                                    <textarea class="form-control" id="firstNameInput" name="redemption_desc"></textarea>
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Terms and Conditions</label>
+                                    <textarea class="form-control" id="firstNameInput" name="term_condition"></textarea>
+                                </div>
+
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Additional Information</label>
+                                    <textarea class="form-control" id="firstNameInput" name="addtional_information"></textarea>
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Date</label>
+                                    <input class="form-control" id="firstNameInput" name="date"  />
+                                </div>
+
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Status</label>
+                                    <select class="form-select" aria-label="Default select example">
+                                        <option selected>Select</option>
+                                        <option value="published">Publish</option>
+                                        <option value="draft">Draft</option>
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-4">
+                                    <button class="btn btn-primary w-100 py-2" type="submit">Submit</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+
+
+        </form>
+    </div>
+
+@endsection
