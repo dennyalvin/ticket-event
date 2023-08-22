@@ -1,0 +1,53 @@
+networks:
+  laravel:
+
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    depends_on:
+      - php
+      - mysql
+    ports: 
+      - "8000:80"
+    volumes:
+      - ~/laravel-workspace/ticket-event:/var/www/html
+      - ./nginx/default.config:/etc/nginx/conf.d/default.conf:pro
+      - ./nginx/access.log:/var/log/nginx/access.log
+      - ./nginx/error.log:/var/log/nginx/error.log
+    volumes_from:
+      - php
+    networks:
+      - laravel
+  
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    restart: unless-stopped
+    tty: true
+    ports: 
+      - "4306:3306"
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ticketevent
+      MYSQL_USER: homestead
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - laravel
+
+  php:
+    networks:
+      - laravel
+    image: php:8.2-fpm
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php
+    volumes: 
+      - ~/laravel-workspace/ticket-event:/var/www/html
+    ports:
+      - "9000:9000"
