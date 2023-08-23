@@ -66,7 +66,7 @@
                     <span class="col border-bottom"></span>
 
                 </div>
-                
+
             </div>
         </div>
 
