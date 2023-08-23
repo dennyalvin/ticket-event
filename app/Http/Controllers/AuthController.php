@@ -34,7 +34,6 @@ class AuthController extends Controller
 
     public function login(): View
     {
-        session(['link' => url()->previous()]);
         return view('auth.login');
     }
 
@@ -53,7 +52,9 @@ class AuthController extends Controller
             ]);
 
            if(!empty(session('link'))) {
-               return redirect(session('link'));
+               $sess = session('link');
+               session()->forget(['link']);
+               return redirect($sess);
            }
 
             return redirect()->intended('/');
@@ -64,7 +65,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->session()->forget(['user_id', 'first_name', 'promoter']);
+        $request->session()->forget(['user_id', 'first_name', 'promoter', 'link']);
 
         return redirect('')->with('success_message', 'Successfully logout');
     }
