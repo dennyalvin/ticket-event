@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\FacebookController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromoterAuthController;
 use App\Http\Controllers\PromoterController;
@@ -40,6 +42,16 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/logout', 'logout')->name('logout');
 });
 
+Route::controller(GoogleController::class)->group(function () {
+    Route::get('auth/google', 'redirectToGoogle')->name('auth.google');
+    Route::get('auth/google/callback', 'handleGoogleCallback')->name('auth.google.callback');
+});
+
+Route::controller(FacebookController::class)->group(function () {
+    Route::get('auth/facebook', 'redirectToFacebook')->name('auth.facebook');
+    Route::get('auth/facebook/callback', 'handleFacebookCallback')->name('auth.facebook.callback');
+});
+
 Route::prefix('promoters')->controller(PromoterAuthController::class)->group(function () {
     Route::get('/register', 'register')->name('promoter.register');
     Route::post('/register', 'registerAction')->name('promoter.register.action');
@@ -66,5 +78,4 @@ Route::prefix('promoters')->controller(PromoterController::class)->group(functio
     Route::get('/balances', 'balance')->name('promoter.balance');
     Route::get('/balances/withdraw', 'withdraw')->name('promoter.balance.withdraw');
     Route::post('/balances/withdraw', 'withdrawAction')->name('promoter.balance.withdraw.action');
-
 });

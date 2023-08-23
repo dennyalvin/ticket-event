@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -45,7 +46,7 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
             $user = User::where(['email' => $email])->first();
 
-            $request->session()->put([
+            Session::put([
                 'user_id' => $user->id,
                 "first_name" => $user->first_name,
                 "promoter" => $user->is_promoter,

@@ -59,17 +59,17 @@
 
                 </div>
                 <div class="row mt-3">
-                    <button class="col btn btn-secondary py-2 m-3" type="submit">
+                    <a href="{{ route('auth.google') }}" class="col btn btn-secondary py-2 m-3">
                         <span>
                             <img width="25" src="https://user-images.githubusercontent.com/1770056/58111071-c2941c80-7bbe-11e9-8cac-1c3202dffb26.png"></span>
-                            Google
-                        </button>
-                    <button class="col btn btn-primary py-2 m-3" type="submit">
+                        Google
+                    </a>
+                    <a href="{{ route('auth.facebook') }}"class="col btn btn-primary py-2 m-3" type="submit">
                         <span>
                             <img width="25" src="https://w7.pngwing.com/pngs/253/503/png-transparent-facebook-computer-icons-social-networking-service-login-facebook-icon-angle-text-logo.png" />
                         </span>
                         Facebook
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>

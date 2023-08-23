@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('first_name',50);
             $table->string('last_name', 50)->nullable();
             $table->string('email', 50)->unique();
-            $table->string('phone', 20)->unique();
+            $table->string('phone', 20)->nullable()->unique();
             $table->tinyInteger('is_promoter')->nullable()->default(0);
-            $table->string('password',100);
+            $table->string('password',100)->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
