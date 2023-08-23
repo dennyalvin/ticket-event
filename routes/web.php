@@ -59,8 +59,12 @@ Route::controller(OrderController::class)->group(function () {
 Route::prefix('promoters')->controller(PromoterController::class)->group(function () {
     Route::get('/events', 'event')->name('promoter.event.list');
     Route::get('/events/create', 'createEvent')->name('promoter.event.create');
-    Route::post('/events', 'createEventAction')->name('promoter.event.create.action');
+    Route::post('/events/create', 'createEventAction')->name('promoter.event.create.action');
     Route::get('/events/{encoded_id}', 'showEvent')->name('promoter.event.detail');
+    Route::put('/events/{encoded_id}', 'updateEventAction')->name('promoter.event.update.action');
+
     Route::get('/balances', 'balance')->name('promoter.balance');
+    Route::get('/balances/withdraw', 'withdraw')->name('promoter.balance.withdraw');
+    Route::post('/balances/withdraw', 'withdrawAction')->name('promoter.balance.withdraw.action');
 
 });

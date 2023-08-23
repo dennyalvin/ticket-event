@@ -20,12 +20,14 @@
                             <div class="mb-3 row">
                                 <div class="col">
                                     <label for="firstNameInput" class="form-label">First name</label>
-                                    <input class="form-control" id="firstNameInput" name="first_name" value="{{ $user->first_name }}" />
+                                    <input class="form-control" id="firstNameInput" name="first_name"
+                                           value="{{ $user ? $user->first_name : null }}"/>
                                 </div>
 
                                 <div class="col">
                                     <label for="inputLastName" class="form-label">Last name</label>
-                                    <input class="form-control" id="inputLastName" name="last_name" value="{{ $user->last_name }}" />
+                                    <input class="form-control" id="inputLastName" name="last_name"
+                                           value="{{ $user ? $user->last_name : null }}"/>
                                 </div>
                             </div>
 
@@ -34,14 +36,16 @@
                                     <label for="inputPhone" class="form-label">Phone</label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="inputPhone">62</span>
-                                        <input type="text" class="form-control" placeholder="81xxx" name="phone" value="{{ str_replace('62','',$user->phone) }}" />
+                                        <input type="text" class="form-control" placeholder="81xxx" name="phone"
+                                               value="{{ str_replace('62','',$user ? $user->phone : '') }}"/>
                                     </div>
                                 </div>
 
                                 <div class="col">
                                     <label for="inputEmail" class="form-label">Email address</label>
                                     <input type="email" class="form-control" id="inputEmail"
-                                           placeholder="name@example.com" name="email" value="{{ $user->email }}" />
+                                           placeholder="name@example.com" name="email"
+                                           value="{{ $user ? $user->email : null}}"/>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +53,7 @@
                 </div>
 
                 <div class="row card shadow-sm mb-5">
-                    <input type="hidden" name="payment_method" value="credit_card" />
+                    <input type="hidden" name="payment_method" value="credit_card"/>
                     <div class="card-body">
                         <h4 class="card-text">Payment Method</h4>
                         <div class="justify-content-between align-items-center">
@@ -57,7 +61,8 @@
                                 <div class="col">
                                     <label for="inputCCNo" class="form-label">Credit Card No</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="inputCCNo" name="cc_no" value="123456">
+                                        <input type="text" class="form-control" id="inputCCNo" name="cc_no"
+                                               value="123456">
                                         <span class="input-group-text" id="basic-addon2">
                                                 <img width="50"
                                                      src="https://e7.pngegg.com/pngimages/678/81/png-clipart-visa-and-master-cards-mastercard-money-foothills-florist-business-visa-visa-mastercard-text-service.png"/>
@@ -68,7 +73,8 @@
 
                                 <div class="col">
                                     <label for="inputCCName" class="form-label">Name</label>
-                                    <input class="form-control" id="inputCCName" name="cc_name" value="{{ $user->first_name }}" />
+                                    <input class="form-control" id="inputCCName" name="cc_name"
+                                           value="{{ $user ? $user->first_name : null }}"/>
                                 </div>
                             </div>
 
@@ -77,9 +83,11 @@
                                     <label for="inputCCExp" class="form-label">Expired</label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">Month(MM)</span>
-                                        <input type="text" maxlength="2" class="form-control" placeholder="MM" name="cc_exp_month" value="08" />
+                                        <input type="text" maxlength="2" class="form-control" placeholder="MM"
+                                               name="cc_exp_month" value="08"/>
                                         <span class="input-group-text">Year(YY)</span>
-                                        <input type="text" maxlength="2" class="form-control" placeholder="YY" name="cc_exp_year" value="29" />
+                                        <input type="text" maxlength="2" class="form-control" placeholder="YY"
+                                               name="cc_exp_year" value="29"/>
                                     </div>
                                 </div>
 
@@ -90,8 +98,14 @@
                                 </div>
                             </div>
 
-
-                            <button class="btn btn-primary w-100 py-2" type="submit">Proceed Payment</button>
+                            @if(!empty(Session::get('user_id')))
+                                <button class="btn btn-primary w-100 py-2" type="submit">Proceed Payment</button>
+                            @else
+                                <div class="alert alert-warning">
+                                To make an order, you have to <a href="{{ route('login') }}">login</a> , don't have account ?
+                                <a href="{{ route('register') }}">register now</a>
+                                </div>
+                            @endif
 
                         </div>
                     </div>

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserBalance extends Model
 {
     public const TRX_TYPE_ORDER = 'order_event';
+    public const TRX_TYPE_WITHDRAW = 'withdraw';
 
     public function order(): BelongsTo {
         return $this->belongsTo(Order::class);

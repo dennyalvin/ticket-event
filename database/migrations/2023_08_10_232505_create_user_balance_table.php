@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('user_balances', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index();
-            $table->unsignedBigInteger('order_id')->index();
+            $table->unsignedBigInteger('order_id')->nullable()->index();
             $table->string('doc_no')->nullable()->index();
             $table->string('transaction_type',50)->index();
-            $table->unsignedBigInteger('debit')->index();
-            $table->unsignedBigInteger('credit')->index();
+            $table->double('debit')->default(0);
+            $table->double('credit')->default(0);
             $table->timestamps();
         });
     }

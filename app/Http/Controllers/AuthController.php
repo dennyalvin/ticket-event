@@ -20,7 +20,6 @@ class AuthController extends Controller
 
     public function registerAction(RegisterUserRequest $request): RedirectResponse
     {
-
         $user = new User;
         $user->first_name = $request->input('first_name');
         $user->last_name = $request->input('last_name');
@@ -34,6 +33,7 @@ class AuthController extends Controller
 
     public function login(): View
     {
+        session(['link' => url()->previous()]);
         return view('auth.login');
     }
 
@@ -45,11 +45,15 @@ class AuthController extends Controller
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
             $user = User::where(['email' => $email])->first();
 
-           $request->session()->put([
-               'user_id' => $user->id,
-               "first_name" => $user->first_name,
-               "promoter" => $user->is_promoter,
-           ]);
+            $request->session()->put([
+                'user_id' => $user->id,
+                "first_name" => $user->first_name,
+                "promoter" => $user->is_promoter,
+            ]);
+
+           if(!empty(session('link'))) {
+               return redirect(session('link'));
+           }
 
             return redirect()->intended('/');
         }
@@ -57,8 +61,9 @@ class AuthController extends Controller
         return $this->login()->withErrors(['message' => 'Failed to login, please check your email or password']);
     }
 
-    public function logout(Request $request) {
-        $request->session()->forget(['user_id','first_name','promoter']);
+    public function logout(Request $request)
+    {
+        $request->session()->forget(['user_id', 'first_name', 'promoter']);
 
         return redirect('')->with('success_message', 'Successfully logout');
     }
