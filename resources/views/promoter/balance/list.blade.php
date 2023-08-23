@@ -7,7 +7,7 @@
                 {{ session('success_message') }}
             </div>
         @endif
-    
+
         @if (session()->has('errors'))
             <div class="card-header alert alert-danger">
                 {{ session('errors') }}

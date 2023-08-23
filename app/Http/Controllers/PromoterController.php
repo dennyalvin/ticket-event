@@ -46,7 +46,7 @@ class PromoterController extends Controller
             ->where('user_id', $this->auth_user)
             ->first();
 
-        return $total_balances->total || 0;
+        return $total_balances->total ? $total_balances->total : 0;
     }
 
     public function withdraw()
@@ -57,7 +57,7 @@ class PromoterController extends Controller
     public function withdrawAction(StoreWithdrawRequest $request)
     {
         if($request->input('amount') > $this->user_total_balance()) {
-            return redirect()->route('promoter.balance')
+            return redirect()->route('promoter.balance.withdraw')
                 ->withErrors('Insufficient withdraw amount request');
         }
 
