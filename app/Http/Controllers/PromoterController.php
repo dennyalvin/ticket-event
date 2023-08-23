@@ -46,7 +46,7 @@ class PromoterController extends Controller
             ->where('user_id', $this->auth_user)
             ->first();
 
-        return $total_balances->total;
+        return $total_balances->total || 0;
     }
 
     public function withdraw()
