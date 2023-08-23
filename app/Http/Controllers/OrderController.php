@@ -88,7 +88,7 @@ class OrderController extends Controller
 
         $order = new Order();
         $order->invoice_no = $this->generateInvoiceNo($user->id, $package->id);
-        $order->user_id = $user->id;
+        $order->user_id = $event->promoter->user_id;
         $order->event_id = $event->id;
         $order->promoter_id = $event->promoter_id;
         $order->package_id = $package->id;
