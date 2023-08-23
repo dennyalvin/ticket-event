@@ -54,7 +54,8 @@ class AuthController extends Controller
            if(!empty(session('link'))) {
                $sess = session('link');
                session()->forget(['link']);
-               return redirect($sess);
+
+               return redirect()->intended($sess);
            }
 
             return redirect()->intended('/');
