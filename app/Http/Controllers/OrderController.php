@@ -88,7 +88,7 @@ class OrderController extends Controller
 
         $order = new Order();
         $order->invoice_no = $this->generateInvoiceNo($user->id, $package->id);
-        $order->user_id = $event->promoter->user_id;
+        $order->user_id = $user->id;
         $order->event_id = $event->id;
         $order->promoter_id = $event->promoter_id;
         $order->package_id = $package->id;
@@ -115,7 +115,7 @@ class OrderController extends Controller
         $info->save();
 
         $balance = new UserBalance();
-        $balance->user_id = $order->user_id;
+        $balance->user_id = $event->promoter->user_id;
         $balance->order_id = $order->id;
         $balance->transaction_type = UserBalance::TRX_TYPE_ORDER;
         $balance->doc_no = $order->invoice_no;
