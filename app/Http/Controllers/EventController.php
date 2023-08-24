@@ -31,7 +31,7 @@ class EventController extends Controller
     {
         $type = $request->input('type');
 
-        $events = Event::with('cheapest');
+        $events = Event::where('status','published')->with('cheapest');
         if(!empty($type)) {
             $events =  $events->where(['event_type_code'=> $type]);
         }
@@ -48,7 +48,7 @@ class EventController extends Controller
 
     public function show($slug)
     {
-        $event = Event::where(['slug' => $slug])->first();
+        $event = Event::where(['slug' => $slug, 'status' => 'published'])->first();
         $data = ['event' => $event];
         return view('event.show', $data);
     }

@@ -56,7 +56,7 @@ class OrderController extends Controller
 
     public function chart($slug, $package_id)
     {
-        $event = Event::where(['slug' => $slug])->whereHas('packages', function ($q) use ($package_id) {
+        $event = Event::where(['slug' => $slug, 'status' => 'published'])->whereHas('packages', function ($q) use ($package_id) {
             $q->where(['id' => $package_id]);
         })->first();
 
@@ -80,7 +80,7 @@ class OrderController extends Controller
                 ->with('errors', 'You need to login to make an order');
         }
 
-        $event = Event::where(['slug' => $slug])->first();
+        $event = Event::where(['slug' => $slug, 'status' => 'published'])->first();
         $package = EventPackage::find($package_id);
 
         if (empty($event) || empty($package)) {
