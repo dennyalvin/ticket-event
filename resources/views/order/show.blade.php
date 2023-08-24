@@ -40,6 +40,15 @@
                         </div>
 
                         <div class="row mb-3">
+                            <div class="col ">
+                                <label for="firstNameInput" class="form-label fw-bold">Link URL : </label>
+                                <a target="_blank" href="{{ $order->event->link_url }}">
+                                    {{ $order->event->link_url }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
                             <div class="col-6">
                                 <label for="inputPhone" class="form-label fw-bold">Price : </label>
                                 <span class="float-end">IDR {{ $order->price_formatted }}</span>

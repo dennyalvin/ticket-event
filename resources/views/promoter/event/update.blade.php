@@ -2,6 +2,12 @@
 
 @section('main')
     <div class="container">
+        @if (session()->has('success_message'))
+            <div class="card-header alert alert-success">
+                {{ session('success_message') }}
+            </div>
+        @endif
+
         @if (session()->has('errors'))
             <div class="card-header alert alert-danger">
                 @foreach ($errors->all() as $error)
@@ -40,6 +46,11 @@
                                 <div class="col">
                                     <label for="inputPhone" class="form-label">Description</label>
                                     <textarea class="form-control" id="firstNameInput" name="description">{{ $event->description }}</textarea>
+                                </div>
+
+                                <div class="col">
+                                    <label for="inputPhone" class="form-label">Link URL</label>
+                                    <input class="form-control" id="firstNameInput" name="link_url" value="{{ $event->link_url }}"/>
                                 </div>
 
                             </div>

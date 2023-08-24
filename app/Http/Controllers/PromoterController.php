@@ -68,7 +68,7 @@ class PromoterController extends Controller
         $balances->transaction_type = UserBalance::TRX_TYPE_WITHDRAW;
         $balances->save();
 
-        return redirect()->route('promoter.balance')->with('success_message', 'Successfully withdraw');;
+        return redirect()->route('promoter.balance')->with('success_message', 'Successfully withdraw');
     }
 
     public function event()
@@ -122,6 +122,7 @@ class PromoterController extends Controller
         $event->redemption_desc = $request->input('redemption_desc');
         $event->term_condition = $request->input('term_condition');
         $event->addition_information = $request->input('additional_information');
+        $event->link_url = $request->input('link_url');
         $event->status = $request->input('status');
 
         $event->save();
@@ -138,7 +139,7 @@ class PromoterController extends Controller
 
         $event_types = EventType::all();
 
-        return redirect()->route('promoter.event.detail', ['encoded_id' => $encoded_id]);
+        return redirect()->route('promoter.event.detail', ['encoded_id' => $encoded_id])->with('success_message', 'Event updated');
     }
 
     public function createEvent()
@@ -166,6 +167,7 @@ class PromoterController extends Controller
         $new_event->redemption_desc = $request->input('redemption_desc');
         $new_event->term_condition = $request->input('term_condition');
         $new_event->addition_information = $request->input('additional_information');
+        $new_event->link_url = $request->input('link_url');
         $new_event->status = $request->input('status');
 
         $new_event->save();
@@ -183,6 +185,6 @@ class PromoterController extends Controller
         $event_types = EventType::all();
 
         $data = ['event_types' => $event_types];
-        return view('promoter.event.create', $data);
+        return view('promoter.event.create', $data)->with('success_message', 'Event created');
     }
 }
