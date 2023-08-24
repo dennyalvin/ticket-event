@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class OrderController extends Controller
@@ -39,13 +40,15 @@ class OrderController extends Controller
         return view('order.index', $data);
     }
 
-    public function show($encoded_invoice){
+    public function show($encoded_invoice)
+    {
         if (empty($this->auth_user)) {
             return redirect('/login');
         }
 
         $invoice_no = base64_decode($encoded_invoice);
-        $order = Order::with('information')->where(['invoice_no' => $invoice_no,'user_id' => $this->auth_user])->first();
+        $order = Order::with('information')->where(['invoice_no' => $invoice_no, 'user_id' => $this->auth_user])->first(
+        );
 
         $data = ['order' => $order];
         return view('order.show', $data);
@@ -91,44 +94,46 @@ class OrderController extends Controller
         }
 
         $order = new Order();
-        $order->invoice_no = $this->generateInvoiceNo($user->id, $package->id);
-        $order->user_id = $user->id;
-        $order->event_id = $event->id;
-        $order->promoter_id = $event->promoter_id;
-        $order->package_id = $package->id;
-        $order->status = Order::STATUS_PAID;
-        $order->event_slug = $event->slug;
-        $order->event_title = $event->title;
-        $order->event_description = $event->description;
-        $order->event_banner = $event->banner;
-        $order->event_date = $event->date;
-        $order->event_selected_package_name = $package->name;
-        $order->qty = 1;
-        $order->price = $package->price;
-        $order->tax = $package->tax;
-        $order->total_amount = $package->total_amount;
-        $order->payment_method = $request->input('payment_method');
-        $order->save();
+        DB::transaction(function () use ($request, $user, $order, $event, $package) {
+            $order->invoice_no = $this->generateInvoiceNo($user->id, $package->id);
+            $order->user_id = $user->id;
+            $order->event_id = $event->id;
+            $order->promoter_id = $event->promoter_id;
+            $order->package_id = $package->id;
+            $order->status = Order::STATUS_PAID;
+            $order->event_slug = $event->slug;
+            $order->event_title = $event->title;
+            $order->event_description = $event->description;
+            $order->event_banner = $event->banner;
+            $order->event_date = $event->date;
+            $order->event_selected_package_name = $package->name;
+            $order->qty = 1;
+            $order->price = $package->price;
+            $order->tax = $package->tax;
+            $order->total_amount = $package->total_amount;
+            $order->payment_method = $request->input('payment_method');
+            $order->save();
 
-        $info = new OrderInformation();
-        $info->order_id = $order->id;
-        $info->first_name = $request->input('first_name');
-        $info->last_name = $request->input('last_name');
-        $info->phone = $request->input('phone');
-        $info->email = $request->input('email');
-        $info->save();
+            $info = new OrderInformation();
+            $info->order_id = $order->id;
+            $info->first_name = $request->input('first_name');
+            $info->last_name = $request->input('last_name');
+            $info->phone = $request->input('phone');
+            $info->email = $request->input('email');
+            $info->save();
 
-        $balance = new UserBalance();
-        $balance->user_id = $event->promoter->user_id;
-        $balance->order_id = $order->id;
-        $balance->transaction_type = UserBalance::TRX_TYPE_ORDER;
-        $balance->doc_no = $order->invoice_no;
-        $balance->debit = $order->total_amount;
-        $balance->credit = 0;
-        $balance->save();
+            $balance = new UserBalance();
+            $balance->user_id = $event->promoter->user_id;
+            $balance->order_id = $order->id;
+            $balance->transaction_type = UserBalance::TRX_TYPE_ORDER;
+            $balance->doc_no = $order->invoice_no;
+            $balance->debit = $order->total_amount;
+            $balance->credit = 0;
+            $balance->save();
+        });
 
         $encoded = base64_encode($order->invoice_no);
-        return redirect()->intended('/users/orders/'.$encoded)->with('status', 'Payment is success');
+        return redirect()->intended('/users/orders/' . $encoded)->with('status', 'Payment is success');
     }
 
     private function generateInvoiceNo(int $user_id, int $package_id): string

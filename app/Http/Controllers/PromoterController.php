@@ -40,7 +40,8 @@ class PromoterController extends Controller
         return view('promoter.balance.list', $data);
     }
 
-    private function user_total_balance() : float{
+    private function user_total_balance(): float
+    {
         $total_balances = DB::table('user_balances')
             ->select(DB::raw('sum(debit - credit) as total'))
             ->where('user_id', $this->auth_user)
@@ -56,7 +57,7 @@ class PromoterController extends Controller
 
     public function withdrawAction(StoreWithdrawRequest $request)
     {
-        if($request->input('amount') > $this->user_total_balance()) {
+        if ($request->input('amount') > $this->user_total_balance()) {
             return redirect()->route('promoter.balance.withdraw')
                 ->withErrors('Insufficient withdraw amount request');
         }
@@ -89,6 +90,12 @@ class PromoterController extends Controller
         $event_id = base64_decode($encoded_id);
 
         $event = Event::find($event_id);
+        if(!$event){
+            return redirect()->route('promoter.event.list')->with(
+                'errors',
+                'Event is not valid'
+            );
+        }
 
         $event_types = EventType::all();
         $data = [
@@ -105,41 +112,49 @@ class PromoterController extends Controller
         $event_id = base64_decode($encoded_id);
 
         $event = Event::find($event_id);
+        if(!$event){
+            return redirect()->route('promoter.event.detail', ['encoded_id' => $encoded_id])->with(
+                'errors',
+                'Event is not valid'
+            );
+        }
 
         $promoter = Promoter::where(['user_id' => $this->auth_user])->first();
 
+        DB::transaction(function () use ($request, $promoter, $event) {
+            $title = $request->input('title');
 
-        $title = $request->input('title');
+            $event->promoter_id = $promoter->id;
+            $event->event_type_code = $request->input('event_type_code');
+            $event->title = $title;
+            $event->description = $request->input('description');
+            $event->banner = 'https://picsum.photos/200/300';
+            $event->slug = StringHelper::generateSlug($title);
+            $event->date_on = $request->input('date_on');
+            $event->location_address = $request->input('location_address');
+            $event->redemption_desc = $request->input('redemption_desc');
+            $event->term_condition = $request->input('term_condition');
+            $event->addition_information = $request->input('additional_information');
+            $event->link_url = $request->input('link_url');
+            $event->status = $request->input('status');
 
-        $event->promoter_id = $promoter->id;
-        $event->event_type_code = $request->input('event_type_code');
-        $event->title = $title;
-        $event->description = $request->input('description');
-        $event->banner = 'https://picsum.photos/200/300';
-        $event->slug = StringHelper::generateSlug($title);
-        $event->date_on = $request->input('date_on');
-        $event->location_address = $request->input('location_address');
-        $event->redemption_desc = $request->input('redemption_desc');
-        $event->term_condition = $request->input('term_condition');
-        $event->addition_information = $request->input('additional_information');
-        $event->link_url = $request->input('link_url');
-        $event->status = $request->input('status');
+            $event->save();
 
-        $event->save();
+            foreach ($request->input('package_id') as $i => $pck) {
+                $package = EventPackage::find($pck);
 
-        foreach ($request->input('package_id') as $i => $pck) {
-            $package = EventPackage::find($pck);
+                $package->name = $request->input('package_name')[$i];
+                $package->quota = $request->input('package_quota')[$i];
+                $package->price = $request->input('package_price')[$i];
+                $package->tax = 0;
+                $package->save();
+            }
+        });
 
-            $package->name = $request->input('package_name')[$i];
-            $package->quota = $request->input('package_quota')[$i];
-            $package->price = $request->input('package_price')[$i];
-            $package->tax = 0;
-            $package->save();
-        }
-
-        $event_types = EventType::all();
-
-        return redirect()->route('promoter.event.detail', ['encoded_id' => $encoded_id])->with('success_message', 'Event updated');
+        return redirect()->route('promoter.event.detail', ['encoded_id' => $encoded_id])->with(
+            'success_message',
+            'Event updated'
+        );
     }
 
     public function createEvent()
@@ -154,37 +169,36 @@ class PromoterController extends Controller
     {
         $promoter = Promoter::where(['user_id' => $this->auth_user])->first();
 
-        $title = $request->input('title');
-        $new_event = new Event();
-        $new_event->promoter_id = $promoter->id;
-        $new_event->event_type_code = $request->input('event_type_code');
-        $new_event->title = $title;
-        $new_event->description = $request->input('description');
-        $new_event->banner = 'https://picsum.photos/200/300';
-        $new_event->slug = StringHelper::generateSlug($title);
-        $new_event->date_on = $request->input('date_on');
-        $new_event->location_address = $request->input('location_address');
-        $new_event->redemption_desc = $request->input('redemption_desc');
-        $new_event->term_condition = $request->input('term_condition');
-        $new_event->addition_information = $request->input('additional_information');
-        $new_event->link_url = $request->input('link_url');
-        $new_event->status = $request->input('status');
+        DB::transaction(function () use ($request, $promoter) {
+            $title = $request->input('title');
+            $new_event = new Event();
+            $new_event->promoter_id = $promoter->id;
+            $new_event->event_type_code = $request->input('event_type_code');
+            $new_event->title = $title;
+            $new_event->description = $request->input('description');
+            $new_event->banner = 'https://picsum.photos/200/300';
+            $new_event->slug = StringHelper::generateSlug($title);
+            $new_event->date_on = $request->input('date_on');
+            $new_event->location_address = $request->input('location_address');
+            $new_event->redemption_desc = $request->input('redemption_desc');
+            $new_event->term_condition = $request->input('term_condition');
+            $new_event->addition_information = $request->input('additional_information');
+            $new_event->link_url = $request->input('link_url');
+            $new_event->status = $request->input('status');
 
-        $new_event->save();
+            $new_event->save();
 
-        foreach ($request->input('package_name') as $i => $pck) {
-            $package = new EventPackage();
-            $package->event_id = $new_event->id;
-            $package->name = $pck;
-            $package->quota = $request->input('package_quota')[$i];
-            $package->price = $request->input('package_price')[$i];
-            $package->tax = 0;
-            $package->save();
-        }
+            foreach ($request->input('package_name') as $i => $pck) {
+                $package = new EventPackage();
+                $package->event_id = $new_event->id;
+                $package->name = $pck;
+                $package->quota = $request->input('package_quota')[$i];
+                $package->price = $request->input('package_price')[$i];
+                $package->tax = 0;
+                $package->save();
+            }
+        });
 
-        $event_types = EventType::all();
-
-        $data = ['event_types' => $event_types];
-        return view('promoter.event.create', $data)->with('success_message', 'Event created');
+        return redirect()->route('promoter.event.create')->with('success_message', 'Event created');
     }
 }
